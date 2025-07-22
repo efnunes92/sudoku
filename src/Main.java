@@ -1,5 +1,6 @@
 import br.com.erikferreira.model.Board;
 import br.com.erikferreira.model.Space;
+import br.com.erikferreira.util.BoardTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,23 +57,59 @@ public class Main {
     }
 
     private static void finalizarJogo() {
+        verificaJogoNulo();
+        if(board.jogoFinalizado()) {
+            System.out.println("O jogo foi finalizado com sucesso!");
+            verificarJogoAtual();
+            board = null;
+        } else {
+            System.out.println("O jogo não foi finalizado, verifique se todos os números estão corretos.");
+        }
     }
 
     private static void limparJogo() {
+        verificaJogoNulo();
+
+        System.out.println("Você tem certeza que deseja limpar o jogo? (s/n)");
+        var resposta = SCANNER.next();
+        while (!resposta.equalsIgnoreCase("n") || !resposta.equalsIgnoreCase("s")) {
+            System.out.println("Resposta inválida, informe 's' para sim ou 'n' para não:");
+            resposta = SCANNER.next();
+        }
+
+        if(resposta.equalsIgnoreCase("s")) {
+            board.resetar();
+        }
     }
 
     private static void verificarStatusJogo() {
+        verificaJogoNulo();
+        System.out.println("O jogos se encontra no status: " + board.getStatus().getLabel());
+        if(board.hasErrors()) {
+            System.out.println("O jogo possui erros, verifique os números inseridos.");
+        } else {
+            System.out.println("O jogo não possui erros.");
+        }
     }
 
     private static void verificarJogoAtual() {
+        verificaJogoNulo();
+
+        var args = new Object[81];
+        var argPos = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Space space = board.getSpaces().get(i).get(j);
+                args[argPos++] = " " + (isNull(space.getActual()) ? " " : space.getActual());
+            }
+        }
+        System.out.println("seu jogo se encontra assim:");
+        System.out.println(BoardTemplate.BOARD_TEMPLATE.formatted(args));
     }
 
     private static void removerNumero() {
-        if(isNull(board)){
-            System.out.println("O jogo não foi iniciado!");
-            return;
-        }
 
+        verificaJogoNulo();
         System.out.println("informe a coluna (0-8):");
         var coluna = verificarNumeroValido(0, 8);
         System.out.println("informe a linha (0-8):");
@@ -87,10 +124,7 @@ public class Main {
     }
 
     private static void colocarNumero() {
-        if(isNull(board)){
-            System.out.println("O jogo não foi iniciado!");
-            return;
-        }
+        verificaJogoNulo();
 
         System.out.println("informe a coluna (0-8):");
         var coluna = verificarNumeroValido(0, 8);
@@ -140,5 +174,11 @@ public class Main {
         return current;
     }
 
-}
+    private static void verificaJogoNulo(){
+        if(isNull(board)){
+            System.out.println("O jogo não foi iniciado!");
+            return;
+        }
+    }
 
+}
