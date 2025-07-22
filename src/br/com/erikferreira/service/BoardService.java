@@ -12,7 +12,7 @@ public class BoardService {
     private final static int BOARD_SIZE = 9;
     private final Board board;
 
-    private BoardService(final Map<String, String> gameConfig) {
+    public BoardService(final Map<String, String> gameConfig) {
         this.board = new Board(initBoard(gameConfig));
     }
 
